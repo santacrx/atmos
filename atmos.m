@@ -1,6 +1,7 @@
-function [T,P,rho,a] = atmos(h,varargin)
+function varargout = atmos(h,varargin)
 % [T,P,rho,a] = atmos(h)
 % [T,P,rho,a] = atmos(h,Units)
+% [output] = atmos(h,[],'Output')
 %
 % Atmospheric tables interpolation output for a given altitude. Results are
 % valid from -2km to 85km height. Based on U.S. Standard Atmosphere 1976
@@ -8,7 +9,8 @@ function [T,P,rho,a] = atmos(h,varargin)
 %
 % Inputs:
 %   h       = altitude [m -OR- ft]
-%   Units   = 'SI' [default if left empty or 'US' 
+%   Units   = 'm' [default if empty] or 'ft' 
+%   Output  = 'all' [default if empty], 'T', 'P', 'rho', or 'a'
 %
 % Outputs:
 %   T       Temperature, in [C] or [F]
@@ -18,13 +20,16 @@ function [T,P,rho,a] = atmos(h,varargin)
 %
 % =====
 % Xavier Santacruz
-% github.com/santacrx
+% github.com/santacrx/atmos
 % 2022/4/4
 
 %check if optional input is selected
-if isempty(varargin)
-    Units='SI';
-else
+Units='m';
+out='all';
+if ~isempty(varargin)
+    if nargin>2
+        out=varargin{2};
+    end
     Units=varargin{1};
 end
 
@@ -36,7 +41,7 @@ dens=[1.478,1.285,1.225,1.167,1.112,1.058,1.007,0.9570,0.9090,0.8630,0.8190,0.77
 aa=[347.9,342.2,340.3,338.4,336.4,334.5,332.5,330.6,328.6,326.6,324.6,322.6,320.5,318.5,316.5,314.4,312.3,310.2,308.1,306,303.8,301.7,299.5,297.4,295.2,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,295.1,296.4,297.7,299.1,300.4,301.7,303,306.5,310.1,313.7,317.2,320.7,324.1,327.5,329.8,329.8,328.8,325.4,322,318.6,315.1,311.5,308,304.4,300.7,297.1,293.4,290.7,288,285.3,282.5,279.7,276.9,274.1];
 
 %convert to m, if input is in feet
-if strcmp(Units,'US')
+if strcmp(Units,'ft')
         h = h.*0.3048; % [ft] to [m]
 end
 %convert input to kilometers
@@ -71,7 +76,7 @@ end
 T=T-273.15; %[C]
 
 %convert to english units if so selected by user
-if strcmp(Units,'US')
+if strcmp(Units,'ft')
     %T=T.*1.8; %[R]
     T=T.*1.8 + 32; %[F]
     P=P.*47.88; %[lbf/ft^2]
@@ -79,4 +84,10 @@ if strcmp(Units,'US')
     a=a./0.3048; %[ft/s]
 end
 
+switch out
+    case 'all'
+        varargout={T,P,rho,a};
+    otherwise
+        varargout={eval(out)};
+end
 end
