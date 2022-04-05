@@ -45,10 +45,10 @@ if strcmp(Units,'ft')
         h = h.*0.3048; % [ft] to [m]
 end
 %convert input to kilometers
-h=h/1000;% [km]
+h=h./1000;% [km]
 
 %check that value is within available data
-if h>86 || h<-2
+if h>86 | h<-2
     warning('Input is out of range (-2<h<86km). Output value will be the last valid value of the table');
 end
 
