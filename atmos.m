@@ -30,7 +30,7 @@ function varargout = atmos(h,varargin)
 % =====
 % Xavier Santacruz
 % github.com/santacrx/atmos
-% 2022/4/4
+% 2022/4/18
 
 %check if optional input is selected
 Units='m';
@@ -45,11 +45,16 @@ end
 %load data from tables 1 and 2. Data units: [km; K; N/m^2; kg/m^3; m/s]
 T1=atmostables(1);
 T2=atmostables(2);
+%combine into a single array, only keep h,T,P,rho,a
 T=[T1(:,[1,5:8]); T2(:,[1,5:8])];
+%sort in ascending order per altitude
 T=sortrows(T);
+%find unique altitude values
 [~,uT,~]=unique(T(:,1));
+%get rid of repeated altitude data
 aT=T(uT,:);
 clear T1 T2 uT T
+%load the values into variables for ease of use
 alt=aT(:,1)';
 temp=aT(:,2)';
 press=aT(:,3)';
